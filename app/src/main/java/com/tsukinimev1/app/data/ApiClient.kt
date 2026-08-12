@@ -8,6 +8,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import okhttp3.OkHttpClient
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -63,8 +64,7 @@ object ApiClient {
     private val api: TsukiNimeApi = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .client(okHttp)
-        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
-        .build()
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))        .build()
         .create(TsukiNimeApi::class.java)
 
     suspend fun fetchHome(): HomeData = withContext(Dispatchers.IO) {
@@ -129,5 +129,3 @@ object ApiClient {
         }
     }
 }
-
-private fun String.toMediaType(): okhttp3.MediaType = okhttp3.MediaType.parse(this)!!
