@@ -50,7 +50,6 @@ import com.tsukinimev1.app.data.cleanTitle
 import com.tsukinimev1.app.data.hasRating
 import com.tsukinimev1.app.data.isOngoing
 import com.tsukinimev1.app.theme.AccentRed
-import com.tsukinimev1.app.theme.Bg
 import com.tsukinimev1.app.theme.Cyan
 import com.tsukinimev1.app.theme.Green
 import kotlinx.coroutines.delay
@@ -77,35 +76,6 @@ fun HeroCarousel(
             .fillMaxWidth()
             .height(268.dp),
     ) {
-        items.forEachIndexed { i, anime ->
-            if (pagerState.currentPage == i) {
-                AsyncImage(
-                    model = anime.banner ?: anime.poster,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .scale(1.08f)
-                        .alpha(0.5f),
-                    contentScale = ContentScale.Crop,
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Black.copy(alpha = 0.62f),
-                            Color.Black.copy(alpha = 0.15f),
-                            Color.Black.copy(alpha = 0.15f),
-                            Color.Black.copy(alpha = 0.85f),
-                            Bg,
-                        ),
-                    )
-                ),
-        )
-
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
@@ -177,6 +147,10 @@ fun HeroCard(
     val statusColor = if (anime.isOngoing) Cyan else Green
     val statusText = if (anime.isOngoing) "EPISODE" else "COMPLETED"
     val epCount = anime.episode?.takeIf { it > 0 }?.let { " $it" } ?: ""
+    val synopsisText = anime.synopsis
+        ?.takeIf { it.isNotBlank() }
+        ?.let { if (it.length > 120) it.substring(0, 120) + "..." else it }
+        ?: "Nonton ${anime.cleanTitle} sub Indo terlengkap di TsukiNime."
 
     Box(
         modifier = Modifier
@@ -309,10 +283,21 @@ fun HeroCard(
                     if (!anime.synopsis.isNullOrBlank()) {
                         Spacer(Modifier.height(7.dp))
                         Text(
-                            text = anime.synopsis,
+                            text = synopsisText,
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                             color = Color.White.copy(alpha = 0.85f),
+                            fontSize = 10.5.sp,
+                            fontWeight = FontWeight.Medium,
+                            lineHeight = 14.sp,
+                        )
+                    } else {
+                        Spacer(Modifier.height(7.dp))
+                        Text(
+                            text = synopsisText,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            color = Color.White.copy(alpha = 0.7f),
                             fontSize = 10.5.sp,
                             fontWeight = FontWeight.Medium,
                             lineHeight = 14.sp,

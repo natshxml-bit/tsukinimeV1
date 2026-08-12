@@ -149,7 +149,7 @@ fun HomeScreen(
             }
             is HomeUiState.Success -> {
                 val data = state.data
-                val heroItems = if (data.ongoing.isNotEmpty()) data.ongoing else data.recent
+                val heroItems = if (data.recent.isNotEmpty()) data.recent else data.ongoing
 
                 if (heroItems.isNotEmpty()) {
                     item {
