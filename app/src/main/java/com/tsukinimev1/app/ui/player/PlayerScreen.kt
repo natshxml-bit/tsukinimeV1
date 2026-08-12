@@ -318,12 +318,11 @@ fun PlayerScreen(
 @Composable
 private fun SectionLabel(text: String) {
     Text(
-        text = text,
+        text = text.uppercase(),
         color = TextSecondary,
         fontSize = 11.sp,
         fontWeight = FontWeight.Bold,
         letterSpacing = 1.sp,
-        textTransform = androidx.compose.ui.text.style.TextTransform.Uppercase,
         modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
     )
 }
