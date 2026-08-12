@@ -153,7 +153,8 @@ fun AppNav() {
                 val slug = entry.arguments?.getString("slug") ?: ""
                 val detailVm: com.tsukinimev1.app.ui.detail.DetailViewModel = viewModel(
                     factory = DetailViewModelFactory(store),
-                )                DetailScreen(
+                )
+                DetailScreen(
                     slug = slug,
                     viewModel = detailVm,
                     store = store,
