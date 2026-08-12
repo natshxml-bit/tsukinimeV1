@@ -260,22 +260,22 @@ fun DetailHero(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color.Transparent,
                             Color.Black.copy(alpha = 0.35f),
+                            Color.Black.copy(alpha = 0.15f),
                             Bg.copy(alpha = 0.92f),
                             Bg,
                         ),
                     )
                 ),
         )
-        // Back — lingkaran 45dp blur semi-transparan
+        // Back — lingkaran 40dp glassmorphism
         Box(
             modifier = Modifier
                 .padding(top = 20.dp, start = 15.dp)
-                .size(45.dp)
+                .size(40.dp)
                 .clip(CircleShape)
-                .background(Color.Black.copy(alpha = 0.5f))
-                .border(1.dp, Color.White.copy(alpha = 0.1f), CircleShape)
+                .background(Color.Black.copy(alpha = 0.45f))
+                .border(1.dp, Color.White.copy(alpha = 0.12f), CircleShape)
                 .clickable(onClick = onBack),
             contentAlignment = Alignment.Center,
         ) {
@@ -283,7 +283,7 @@ fun DetailHero(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                 contentDescription = "Back",
                 tint = Color.White,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(19.dp),
             )
         }
         // Poster + title — menjorok keluar dari bottom banner (overlap)
@@ -300,11 +300,11 @@ fun DetailHero(
                 contentDescription = detail.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .width(110.dp)
+                    .width(108.dp)
                     .aspectRatio(2f / 3f)
                     .clip(RoundedCornerShape(16.dp))
-                    .border(2.dp, AccentRed.copy(alpha = 0.35f), RoundedCornerShape(16.dp))
-                    .shadow(10.dp, RoundedCornerShape(16.dp), spotColor = Color.Black),
+                    .border(1.dp, Color.White.copy(alpha = 0.16f), RoundedCornerShape(16.dp))
+                    .shadow(12.dp, RoundedCornerShape(16.dp), spotColor = Color.Black),
             )
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f).padding(bottom = 6.dp)) {
@@ -501,31 +501,35 @@ fun DetailBody(
             Spacer(Modifier.height(16.dp))
         }
 
-        // CTA — Tonton (flex 1.8) + Subscribe (flex 1)
+        // CTA — Tonton (gradient pill) + Subscribe
         Row(verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
                     .weight(1.8f)
-                    .height(48.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(AccentRed)
+                    .height(50.dp)
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(
+                        Brush.linearGradient(
+                            colors = listOf(AccentRed, Color(0xFFB91C1C)),
+                        )
+                    )
                     .clickable(onClick = onPlay),
                 contentAlignment = Alignment.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
-                    Spacer(Modifier.width(6.dp))
-                    Text("TONTON SEKARANG", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Black, letterSpacing = 0.3.sp)
+                    Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(7.dp))
+                    Text("Tonton Sekarang", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Black, letterSpacing = 0.2.sp)
                 }
             }
             Spacer(Modifier.width(10.dp))
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(48.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(AccentRed.copy(alpha = 0.12f))
-                    .border(1.dp, AccentRed.copy(alpha = 0.4f), RoundedCornerShape(14.dp))
+                    .height(50.dp)
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(AccentRed.copy(alpha = 0.1f))
+                    .border(1.dp, AccentRed.copy(alpha = 0.35f), RoundedCornerShape(999.dp))
                     .clickable(onClick = onToggleSubscribe),
                 contentAlignment = Alignment.Center,
             ) {
@@ -534,13 +538,13 @@ fun DetailBody(
                         imageVector = if (subscribed) Icons.Filled.NotificationsActive else Icons.Filled.NotificationsNone,
                         contentDescription = null,
                         tint = AccentRed,
-                        modifier = Modifier.size(15.dp),
+                        modifier = Modifier.size(16.dp),
                     )
                     Spacer(Modifier.width(5.dp))
                     Text(
                         text = if (subscribed) "Terlanggan" else "Subscribe",
                         color = if (subscribed) AccentRed else TextPrimary,
-                        fontSize = 12.sp,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 }
@@ -656,13 +660,15 @@ fun EpisodeSection(
     var query by remember { mutableStateOf("") }
     var showSearch by remember { mutableStateOf(false) }
     var page by remember { mutableStateOf(0) }
+    var asc by remember { mutableStateOf(false) }
     val pageSize = 20
 
     LaunchedEffect(detail.animeId) { page = 0 }
 
-    val filtered = remember(detail.episodes, query) {
-        if (query.isBlank()) detail.episodes
+    val filtered = remember(detail.episodes, query, asc) {
+        val base = if (query.isBlank()) detail.episodes
         else detail.episodes.filter { it.title.contains(query, ignoreCase = true) || it.episodeId.contains(query, ignoreCase = true) }
+        if (asc) base.reversed() else base
     }
     val visible = filtered.take(pageSize * (page + 1))
 
@@ -688,8 +694,13 @@ fun EpisodeSection(
                 IconButton(onClick = { showSearch = !showSearch }, modifier = Modifier.size(40.dp)) {
                     Icon(Icons.Filled.Search, contentDescription = "Cari", tint = TextPrimary, modifier = Modifier.size(20.dp))
                 }
-                IconButton(onClick = {}, modifier = Modifier.size(40.dp)) {
-                    Icon(Icons.Filled.Sort, contentDescription = "Urut", tint = TextPrimary, modifier = Modifier.size(20.dp))
+                IconButton(onClick = { asc = !asc }, modifier = Modifier.size(40.dp)) {
+                    Icon(
+                        imageVector = if (asc) Icons.Filled.Sort else Icons.Filled.Sort,
+                        contentDescription = "Urut",
+                        tint = if (asc) AccentRed else TextPrimary,
+                        modifier = Modifier.size(20.dp).rotate(if (asc) 180f else 0f),
+                    )
                 }
             }
         }
@@ -801,17 +812,18 @@ fun EpisodeRow(
         Spacer(Modifier.width(8.dp))
         Box(
             modifier = Modifier
-                .clip(RoundedCornerShape(10.dp))
-                .background(AccentRed.copy(alpha = 0.15f))
-                .border(1.dp, AccentRed.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
-                .padding(horizontal = 12.dp, vertical = 8.dp),
+                .size(38.dp)
+                .clip(CircleShape)
+                .background(if (ep.watched) AccentRed.copy(alpha = 0.2f) else AccentRed.copy(alpha = 0.12f))
+                .border(1.dp, AccentRed.copy(alpha = 0.35f), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = AccentRed, modifier = Modifier.size(11.dp))
-                Spacer(Modifier.width(4.dp))
-                Text("Play", color = AccentRed, fontSize = 11.sp, fontWeight = FontWeight.Black)
-            }
+            Icon(
+                imageVector = Icons.Filled.PlayArrow,
+                contentDescription = null,
+                tint = AccentRed,
+                modifier = Modifier.size(16.dp),
+            )
         }
     }
 }
