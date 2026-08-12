@@ -25,6 +25,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RectangleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -429,7 +430,7 @@ fun DetailBody(
                         .border(
                             width = if (i > 0) 1.dp else 0.dp,
                             color = Color.White.copy(alpha = 0.06f),
-                            shape = androidx.compose.foundation.shape.RectangleShape,
+                            shape = RectangleShape,
                         ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
