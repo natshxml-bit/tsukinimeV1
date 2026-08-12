@@ -54,8 +54,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onTextLayout
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.onTextLayout
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -372,8 +372,7 @@ fun DetailBody(
             addNotNull("Rilis ${detail.released}", detail.released)
             addNotNull(detail.author, detail.author)
             addNotNull("${detail.totalEpisodes} Eps", detail.totalEpisodes?.let { it.toString() })
-        }
-        if (meta.isNotEmpty()) {
+        }        if (meta.isNotEmpty()) {
             MetaChipsRow(meta)
             Spacer(Modifier.height(12.dp))
         }
@@ -444,8 +443,8 @@ fun formatCount(v: Long): String {
     }
 }
 
-private fun <T> MutableList<Pair<String, String>>.addNotNull(text: String, raw: String?) {
-    if (!raw.isNullOrBlank()) add(text to raw)
+private fun MutableList<Pair<String, String>>.addNotNull(text: String?, raw: String?) {
+    if (!text.isNullOrBlank() && !raw.isNullOrBlank()) add(text to raw)
 }
 
 @Composable
