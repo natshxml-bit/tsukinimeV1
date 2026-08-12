@@ -1,0 +1,17 @@
+# Gradle
+.gradle/
+build/
+local.properties
+*.apk
+*.aab
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Keystore (jangan commit yang rahasia; debug.keystore sengaja di-commit biar signature konsisten)
+# /keystore/release.keystore
+
+# OS
+.DS_Store
