@@ -8,7 +8,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.isString
 import kotlinx.serialization.json.jsonObject
 import okhttp3.OkHttpClient
 import okhttp3.MediaType.Companion.toMediaType
@@ -84,8 +83,8 @@ object ApiClient {
         try {
             val query = "query(\$s: String) { Media(search: \$s, type: ANIME) { bannerImage coverImage { extraLarge } } }"
             val body = kotlinx.serialization.json.buildJsonObject {
-                put("query", query)
-                put("variables", kotlinx.serialization.json.buildJsonObject { put("search", clean) })
+                put("query", JsonPrimitive(query))
+                put("variables", kotlinx.serialization.json.buildJsonObject { put("search", JsonPrimitive(clean)) })
             }.toString()
             val req = okhttp3.Request.Builder()
                 .url("https://graphql.anilist.co")
@@ -95,7 +94,7 @@ object ApiClient {
             val text = res.body?.string().orEmpty()
             val root = runCatching { json.parseToJsonElement(text).jsonObject }.getOrNull()
             val media = root?.get("data")?.jsonObject?.get("Media")?.jsonObject
-            val banner = (media?.get("bannerImage") as? JsonPrimitive)?.takeIf { it.isString }?.content
+            val banner = (media?.get("bannerImage") as? JsonPrimitive)?.content
             if (!banner.isNullOrBlank()) banner
             else (media?.get("coverImage")?.jsonObject?.get("extraLarge") as? JsonPrimitive)?.content
                 ?.takeIf { it.isNotBlank() }

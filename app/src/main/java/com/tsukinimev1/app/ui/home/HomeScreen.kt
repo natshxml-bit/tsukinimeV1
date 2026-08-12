@@ -67,6 +67,8 @@ fun HomeScreen(
     val profile by store.profile.collectAsStateWithLifecycle(initialValue = UserProfile())
     val history by store.history.collectAsStateWithLifecycle(initialValue = emptyList())
 
+    val heroBanners = remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+
     val heroCandidates = remember(uiState) {
         val d = (uiState as? HomeUiState.Success)?.data ?: HomeData()
         val list = if (d.recent.isNotEmpty()) d.recent else d.ongoing
@@ -93,7 +95,6 @@ fun HomeScreen(
 
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-    val heroBanners = remember { mutableStateOf<Map<String, String>>(emptyMap()) }
 
     fun greeting(): String {
         val h = java.time.LocalTime.now().hour
