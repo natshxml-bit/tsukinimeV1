@@ -100,13 +100,15 @@ fun AnimeCard(
                 }
             }
             if (showScore && anime.hasRating) {
+                // A6.2: rating badge di pojok KANAN atas (lawan dari status badge),
+                // bentuk beda — full rounded 8dp semua sudut, translucent hitam.
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(6.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Black.copy(alpha = 0.55f))
-                        .padding(horizontal = 5.dp, vertical = 2.dp),
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.Black.copy(alpha = 0.5f))
+                        .padding(horizontal = 6.dp, vertical = 4.dp),
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -115,11 +117,11 @@ fun AnimeCard(
                             tint = Color(0xFFFBBF24),
                             modifier = Modifier.size(10.dp),
                         )
-                        Spacer(Modifier.width(2.dp))
+                        Spacer(Modifier.width(3.dp))
                         Text(
                             text = anime.score.orEmpty(),
                             color = Color.White,
-                            fontSize = 9.sp,
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.Bold,
                         )
                     }

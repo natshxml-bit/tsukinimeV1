@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -289,9 +290,7 @@ fun DetailHero(
                 modifier = Modifier
                     .width(100.dp)
                     .aspectRatio(2f / 3f)
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(SurfaceAlt)
-                    .border(1.dp, Color.White.copy(alpha = 0.15f), RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(8.dp))
                     .offset(y = 60.dp),
             )
             Spacer(Modifier.width(14.dp))
@@ -365,12 +364,12 @@ fun DetailBody(
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Spacer(Modifier.height(40.dp))
 
-        // Metadata chips (max 8 + N lainnya)
-        val meta = buildList<Pair<String, String>> {
-            addNotNull("TV", detail.type)
-            addNotNull("Rilis ${detail.released}", detail.released)
-            addNotNull(detail.author, detail.author)
-            addNotNull("${detail.totalEpisodes} Eps", detail.totalEpisodes?.let { it.toString() })
+        // B3: Metadata chips dengan icon (📅🎬🏢📀), FlowRow wrap, skip null.
+        val meta = buildList {
+            detail.released?.takeIf { it.isNotBlank() }?.let { add("📅" to "Rilis: $it") }
+            detail.type?.takeIf { it.isNotBlank() }?.let { add("🎬" to it) }
+            detail.author?.takeIf { it.isNotBlank() }?.let { add("🏢" to "Studio: $it") }
+            detail.totalEpisodes?.takeIf { it > 0 }?.let { add("📀" to "Total: $it Eps") }
         }
         if (meta.isNotEmpty()) {
             MetaChipsRow(meta)
@@ -443,33 +442,33 @@ fun formatCount(v: Long): String {
     }
 }
 
-private fun MutableList<Pair<String, String>>.addNotNull(text: String?, raw: String?) {
-    if (!text.isNullOrBlank() && !raw.isNullOrBlank()) add(text to raw)
-}
-
 @Composable
 fun MetaChipsRow(chips: List<Pair<String, String>>) {
     val visible = chips.take(8)
     val hidden = chips.size - visible.size
-    Row(
+    FlowRow(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        visible.forEach { (text, _) ->
+        visible.forEach { (icon, text) ->
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(999.dp))
-                    .background(Color.White.copy(alpha = 0.06f))
-                    .border(1.dp, Color.White.copy(alpha = 0.12f), RoundedCornerShape(999.dp))
+                    .background(Color(0xFF1A1A1A))
                     .padding(horizontal = 10.dp, vertical = 5.dp),
             ) {
-                Text(text, color = TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(icon, fontSize = 11.sp)
+                    Spacer(Modifier.width(5.dp))
+                    Text(text, color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                }
             }
         }
         if (hidden > 0) {
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(999.dp))
-                    .background(Color.White.copy(alpha = 0.06f))
+                    .background(Color(0xFF1A1A1A))
                     .padding(horizontal = 10.dp, vertical = 5.dp),
             ) {
                 Text("+$hidden lainnya", color = TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
