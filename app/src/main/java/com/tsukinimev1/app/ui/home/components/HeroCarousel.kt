@@ -1,5 +1,6 @@
 package com.tsukinimev1.app.ui.home.components
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,6 +26,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,8 +40,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tsukinimev1.app.data.AnimeItem
 import com.tsukinimev1.app.data.cleanTitle
+import com.tsukinimev1.app.data.hasRating
 import com.tsukinimev1.app.data.isOngoing
 import com.tsukinimev1.app.theme.AccentRed
+import com.tsukinimev1.app.theme.Bg
 import com.tsukinimev1.app.theme.Cyan
 import com.tsukinimev1.app.theme.Green
 import com.tsukinimev1.app.theme.Surface
@@ -81,12 +85,14 @@ fun HeroCarousel(
         ) {
             repeat(items.size) { i ->
                 val active = pagerState.currentPage == i
+                val width by animateDpAsState(if (active) 20.dp else 6.dp, label = "dot")
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 3.dp)
                         .clip(RoundedCornerShape(999.dp))
                         .background(if (active) AccentRed else Color.White.copy(alpha = 0.3f))
-                        .size(if (active) 18.dp else 6.dp, 6.dp),
+                        .width(width)
+                        .height(6.dp),
                 )
             }
         }
@@ -106,7 +112,7 @@ fun HeroCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 6.dp)
-            .aspectRatio(16f / 11f)
+            .aspectRatio(16f / 9f)
             .clip(RoundedCornerShape(16.dp))
             .background(Surface)
             .clickable(onClick = onClick),
@@ -123,11 +129,10 @@ fun HeroCard(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color.Black.copy(alpha = 0.4f),
                             Color.Transparent,
                             Color.Transparent,
-                            Color.Black.copy(alpha = 0.7f),
-                            Color.Black,
+                            Bg.copy(alpha = 0.55f),
+                            Bg,
                         ),
                         startY = 0f,
                         endY = 1200f,
@@ -162,9 +167,11 @@ fun HeroCard(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        HeroBadge("★ ${anime.score ?: "0.0"}", AccentRed, true)
+                        if (anime.hasRating) {
+                            HeroBadge("★ ${anime.score?.trim()}", AccentRed, true)
+                        }
                         HeroBadge(statusText, statusColor, false)
-                        anime.type?.let { HeroBadge(it, Color.White, false) }
+                        anime.type?.takeIf { it.isNotBlank() }?.let { HeroBadge(it, Color.White, false) }
                     }
                     if (!anime.synopsis.isNullOrBlank()) {
                         Spacer(Modifier.height(6.dp))
@@ -180,14 +187,14 @@ fun HeroCard(
                 }
             }
             Spacer(Modifier.height(10.dp))
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(1.6f)
+                        .height(48.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(AccentRed)
-                        .clickable(onClick = onPlayClick)
-                        .padding(vertical = 11.dp),
+                        .clickable(onClick = onPlayClick),
                     contentAlignment = Alignment.Center,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -209,11 +216,12 @@ fun HeroCard(
                 Spacer(Modifier.width(8.dp))
                 Box(
                     modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp)
                         .clip(RoundedCornerShape(12.dp))
                         .background(Color.Black.copy(alpha = 0.5f))
                         .border(1.dp, Color.White.copy(alpha = 0.22f), RoundedCornerShape(12.dp))
-                        .clickable(onClick = onClick)
-                        .padding(horizontal = 16.dp, vertical = 11.dp),
+                        .clickable(onClick = onClick),
                     contentAlignment = Alignment.Center,
                 ) {
                     Row(verticalAlignment = Alignment.CenterVertically) {

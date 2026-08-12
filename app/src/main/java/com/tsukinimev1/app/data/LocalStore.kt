@@ -20,6 +20,7 @@ data class UserProfile(
     val name: String = "Guest",
     val level: Int = 1,
     val rank: String = "BASIC",
+    val avatarUrl: String? = null,
 )
 
 data class CheckInStatus(
@@ -33,6 +34,7 @@ class LocalStore(private val context: Context) {
         val name = stringPreferencesKey("user_name")
         val level = intPreferencesKey("user_level")
         val rank = stringPreferencesKey("user_rank")
+        val avatarUrl = stringPreferencesKey("user_avatar_url")
 
         val watchlist = stringSetPreferencesKey("watchlist")
         val history = stringPreferencesKey("history")
@@ -40,6 +42,8 @@ class LocalStore(private val context: Context) {
 
         val lastCheckIn = stringPreferencesKey("last_checkin")
         val checkInStreak = intPreferencesKey("checkin_streak")
+
+        val watchedEpisodes = stringSetPreferencesKey("watched_episodes")
     }
 
     // ---------- Profile ----------
@@ -48,6 +52,7 @@ class LocalStore(private val context: Context) {
             name = p[Keys.name] ?: "Guest",
             level = p[Keys.level] ?: 1,
             rank = p[Keys.rank] ?: "BASIC",
+            avatarUrl = p[Keys.avatarUrl],
         )
     }
 
@@ -56,6 +61,7 @@ class LocalStore(private val context: Context) {
             prefs[Keys.name] = p.name
             prefs[Keys.level] = p.level
             prefs[Keys.rank] = p.rank
+            p.avatarUrl?.let { prefs[Keys.avatarUrl] = it }
         }
     }
 
@@ -81,6 +87,24 @@ class LocalStore(private val context: Context) {
 
     suspend fun isInWatchlist(animeId: String): Boolean =
         context.dataStore.data.map { p -> animeId in (p[Keys.watchlist] ?: emptySet()) }.first()
+
+    // ---------- Watched episodes ----------
+    val watchedEpisodes: Flow<Set<String>> = context.dataStore.data.map { p ->
+        p[Keys.watchedEpisodes] ?: emptySet()
+    }
+
+    suspend fun markWatched(episodeId: String) {
+        if (episodeId.isBlank()) return
+        context.dataStore.edit { p ->
+            val current = p[Keys.watchedEpisodes] ?: emptySet()
+            if (episodeId !in current) {
+                p[Keys.watchedEpisodes] = current + episodeId
+            }
+        }
+    }
+
+    suspend fun isWatched(episodeId: String): Boolean =
+        context.dataStore.data.map { p -> episodeId in (p[Keys.watchedEpisodes] ?: emptySet()) }.first()
 
     // ---------- History + progress ----------
     val history: Flow<List<AnimeItem>> = context.dataStore.data.map { p ->

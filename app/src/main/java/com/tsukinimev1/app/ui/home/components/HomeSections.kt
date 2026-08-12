@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -87,31 +87,38 @@ fun AnimeGridSection(
     onSeeAll: (() -> Unit)? = null,
     onItemClick: (AnimeItem) -> Unit,
 ) {
+    if (items.isEmpty()) return
     Column(modifier = modifier.fillMaxWidth()) {
         SectionHeader(title = title, onSeeAll = onSeeAll)
         Spacer(Modifier.height(10.dp))
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            contentPadding = PaddingValues(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxWidth()
-                .height((items.size / 3.0).coerceAtLeast(1.0).ceil().times(220).dp),
+                .padding(horizontal = 16.dp),
         ) {
-            items(items) { anime ->
-                AnimeCard(
-                    anime = anime,
-                    badge = badge,
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { onItemClick(anime) },
-                )
+            val cellW = (maxWidth - 20.dp) / 3f
+            val cardH = cellW * 1.5f + 46.dp
+            val rows = ((items.size + 2) / 3).coerceAtLeast(1)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(rows * cardH + (rows - 1) * 14.dp),
+            ) {
+                items(items) { anime ->
+                    AnimeCard(
+                        anime = anime,
+                        badge = badge,
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { onItemClick(anime) },
+                    )
+                }
             }
         }
     }
 }
-
-private fun Double.ceil(): Int = kotlin.math.ceil(this).toInt()
 
 @Composable
 fun ShimmerBlock(
@@ -132,6 +139,18 @@ fun ShimmerBlock(
             Box(modifier = Modifier.width(60.dp).height(14.dp).background(color))
         }
         Spacer(Modifier.height(10.dp))
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            repeat(3) {
+                Column(modifier = Modifier.width(100.dp)) {
+                    Box(modifier = Modifier.width(100.dp).height(150.dp).background(color))
+                    Spacer(Modifier.height(6.dp))
+                    Box(modifier = Modifier.width(80.dp).height(12.dp).background(color))
+                }
+            }
+        }
+        Spacer(Modifier.height(14.dp))
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {

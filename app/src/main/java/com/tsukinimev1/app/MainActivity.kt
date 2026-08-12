@@ -149,8 +149,13 @@ fun AppNav() {
                 route = "detail/{slug}",
                 arguments = listOf(navArgument("slug") { defaultValue = "" }),
             ) { entry ->
+                val slug = entry.arguments?.getString("slug") ?: ""
+                val detailVm: com.tsukinimev1.app.ui.detail.DetailViewModel = viewModel(
+                    factory = DetailViewModelFactory(store),
+                )
                 DetailScreen(
-                    slug = entry.arguments?.getString("slug") ?: "",
+                    slug = slug,
+                    viewModel = detailVm,
                     store = store,
                     navController = navController,
                 )

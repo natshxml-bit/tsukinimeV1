@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tsukinimev1.app.data.AnimeItem
 import com.tsukinimev1.app.data.cleanTitle
+import com.tsukinimev1.app.data.hasRating
 import com.tsukinimev1.app.theme.AccentRed
 import com.tsukinimev1.app.theme.SurfaceAlt
 import com.tsukinimev1.app.theme.TextPrimary
@@ -99,7 +100,7 @@ fun AnimeCard(
                     )
                 }
             }
-            if (showScore && (anime.score?.isNotBlank() == true)) {
+            if (showScore && anime.hasRating) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
@@ -152,6 +153,7 @@ fun AnimeCard(
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             lineHeight = 15.sp,
+            modifier = Modifier.height(40.dp),
         )
     }
 }

@@ -105,11 +105,14 @@ fun PlayerScreen(
             val duration = player.duration.takeIf { it > 0 } ?: 0
             val pct = if (duration > 0) ((position * 100) / duration).toInt() else 0
             scope.launch {
+                store.markWatched(episodeId)
+                val detail = runCatching { ApiClient.fetchAnimeDetail(animeId) }.getOrNull()
                 store.pushHistory(
                     AnimeItem(
                         animeId = animeId,
                         title = displayTitle,
-                        poster = null,
+                        poster = detail?.poster,
+                        banner = detail?.banner,
                         episode = pct.coerceIn(0, 100),
                     )
                 )

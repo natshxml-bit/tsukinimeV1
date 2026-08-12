@@ -35,6 +35,14 @@ val AnimeItem.cleanTitle: String
 val AnimeItem.isOngoing: Boolean
     get() = !(status ?: "").uppercase().contains("COMPLETED")
 
+val AnimeItem.hasRating: Boolean
+    get() {
+        val raw = score?.trim().orEmpty()
+        if (raw.isEmpty()) return false
+        val v = raw.toFloatOrNull() ?: return false
+        return v > 0f
+    }
+
 @Serializable
 data class EpisodeInfo(
     @SerialName("episodeId") val episodeId: String = "",

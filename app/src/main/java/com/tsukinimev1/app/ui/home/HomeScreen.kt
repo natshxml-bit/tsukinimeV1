@@ -178,7 +178,7 @@ fun HomeScreen(
                 if (state.genres.isNotEmpty()) {
                     item {
                         GenreChipsRow(
-                            genres = state.genres.take(15),
+                            genres = state.genres.take(10),
                             onGenreClick = { g ->
                                 openList("genre", g.title, genre = g.endpoint)
                             },

@@ -56,21 +56,14 @@ fun CheckInCard(
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(18.dp))
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(
-                        AccentRed.copy(alpha = 0.16f),
-                        Green.copy(alpha = 0.07f),
-                    ),
-                )
-            )
-            .border(1.dp, AccentRed.copy(alpha = 0.35f), RoundedCornerShape(18.dp))
+            .background(Color(0xFF1A0A0A))
+            .border(1.dp, AccentRed, RoundedCornerShape(18.dp))
             .padding(14.dp, 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
             modifier = Modifier
-                .size(42.dp)
+                .size(40.dp)
                 .clip(RoundedCornerShape(13.dp))
                 .background(AccentRed)
                 .padding(10.dp),
@@ -87,8 +80,8 @@ fun CheckInCard(
             Text(
                 text = "Daily Check-in Hunter",
                 color = TextPrimary,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Black,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
             )
             Text(
                 text = if (checked)
@@ -96,7 +89,7 @@ fun CheckInCard(
                 else
                     (if (status.streak > 0) "Streak ${status.streak} hari · ambil +25 XP" else "Ambil +25 XP setiap hari"),
                 color = TextSecondary,
-                fontSize = 11.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
@@ -106,10 +99,10 @@ fun CheckInCard(
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
-                .background(if (checked) Green.copy(alpha = 0.12f) else AccentRed)
+                .background(if (checked) Color.Transparent else AccentRed)
                 .border(
-                    width = if (checked) 1.dp else 0.dp,
-                    color = if (checked) Green.copy(alpha = 0.4f) else Color.Transparent,
+                    width = 1.dp,
+                    color = if (checked) Green else Color.Transparent,
                     shape = RoundedCornerShape(12.dp),
                 )
                 .clickable(enabled = !checked, onClick = onClaim)
@@ -147,17 +140,16 @@ fun GenreChipsRow(
             items(genres) { genre ->
                 Row(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(999.dp))
-                        .background(Color.White.copy(alpha = 0.04f))
-                        .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(999.dp))
+                        .clip(RoundedCornerShape(50))
+                        .border(1.dp, AccentRed, RoundedCornerShape(50))
                         .clickable { onGenreClick(genre) }
-                        .padding(horizontal = 15.dp, vertical = 9.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = genre.title,
                         color = AccentRed,
-                        fontSize = 12.sp,
+                        fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
                 }
@@ -305,29 +297,27 @@ fun ContinueCard(
                 softWrap = false,
             )
             Spacer(Modifier.height(5.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .width(40.dp)
-                        .height(3.dp)
-                        .clip(RoundedCornerShape(999.dp))
-                        .background(Color.White.copy(alpha = 0.18f)),
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(progress / 100f)
-                            .height(3.dp)
-                            .background(Color.White),
-                    )
-                }
-                Spacer(Modifier.width(6.dp))
-                Text(
-                    text = "$progress%",
-                    color = Color.White.copy(alpha = 0.7f),
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-            }
+            Text(
+                text = "$progress%",
+                color = Color.White.copy(alpha = 0.7f),
+                fontSize = 9.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
+        // progress bar tipis 3dp, absolute bottom
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .height(3.dp)
+                .background(Color.White.copy(alpha = 0.18f)),
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(progress / 100f)
+                    .height(3.dp)
+                    .background(AccentRed),
+            )
         }
     }
 }
