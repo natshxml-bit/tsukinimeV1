@@ -22,6 +22,7 @@ import com.tsukinimev1.app.data.LocalStore
 import com.tsukinimev1.app.theme.TsukiNimeTheme
 import com.tsukinimev1.app.ui.nav.BottomBar
 import com.tsukinimev1.app.ui.detail.DetailScreen
+import com.tsukinimev1.app.ui.detail.DetailViewModelFactory
 import com.tsukinimev1.app.ui.home.HomeScreen
 import com.tsukinimev1.app.ui.library.LibraryScreen
 import com.tsukinimev1.app.ui.list.ListScreen
@@ -152,8 +153,7 @@ fun AppNav() {
                 val slug = entry.arguments?.getString("slug") ?: ""
                 val detailVm: com.tsukinimev1.app.ui.detail.DetailViewModel = viewModel(
                     factory = DetailViewModelFactory(store),
-                )
-                DetailScreen(
+                )                DetailScreen(
                     slug = slug,
                     viewModel = detailVm,
                     store = store,

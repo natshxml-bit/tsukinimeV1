@@ -367,7 +367,7 @@ fun DetailBody(
         Spacer(Modifier.height(40.dp))
 
         // Metadata chips (max 8 + N lainnya)
-        val meta = buildList {
+        val meta = buildList<Pair<String, String>> {
             addNotNull("TV", detail.type)
             addNotNull("Rilis ${detail.released}", detail.released)
             addNotNull(detail.author, detail.author)

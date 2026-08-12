@@ -105,7 +105,7 @@ fun AnimeGridSection(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(rows * cardH + (rows - 1) * 14.dp),
+                    .height(cardH * rows + 14.dp * (rows - 1)),
             ) {
                 items(items) { anime ->
                     AnimeCard(
