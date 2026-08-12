@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.serializer
 import java.time.LocalDate
 
 private val Context.dataStore by preferencesDataStore(name = "tsukinime")
@@ -113,7 +112,7 @@ class LocalStore(private val context: Context) {
             }.getOrDefault(emptyMap()).toMutableMap()
             map[animeId] = progressPercent
             p[Keys.historyProgress] = json.encodeToString(
-                MapSerializer(serializer<String>(), serializer<Int>()), map
+                MapSerializer(String.serializer(), Int.serializer()), map
             )
         }
     }
