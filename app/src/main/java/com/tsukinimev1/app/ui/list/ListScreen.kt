@@ -138,9 +138,9 @@ fun ListScreen(
                             anime = anime,
                             modifier = Modifier.fillMaxWidth(),
                             badge = when (type) {
-                                "ongoing-anime" -> CardBadge("ONGOING", com.tsukinimev1.app.theme.Cyan, Color(0xFF0D0D12))
-                                "complete-anime" -> CardBadge("END", com.tsukinimev1.app.theme.Indigo, Color(0xFF0D0D12))
-                                "film" -> CardBadge("MOVIE", com.tsukinimev1.app.theme.Amber, Color(0xFF0D0D12))
+                                "ongoing-anime" -> CardBadge("ONGOING", com.tsukinimev1.app.theme.Cyan)
+                                "complete-anime" -> CardBadge("END", com.tsukinimev1.app.theme.Indigo)
+                                "film" -> CardBadge("MOVIE", com.tsukinimev1.app.theme.Amber)
                                 else -> null
                             },
                             onClick = { navController.navigate("detail/${anime.animeId}") },

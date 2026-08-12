@@ -88,6 +88,11 @@ fun AnimeGridSection(
     onItemClick: (AnimeItem) -> Unit,
 ) {
     if (items.isEmpty()) return
+    // A0: grid preview wajib kelipatan kolom (3,6,9...). Sisa item tetap ada
+    // di halaman "Semua". Kalau hasil potong < 1 baris penuh -> skip total.
+    val columns = 3
+    val displayItems = items.take((items.size / columns) * columns)
+    if (displayItems.isEmpty()) return
     Column(modifier = modifier.fillMaxWidth()) {
         SectionHeader(title = title, onSeeAll = onSeeAll)
         Spacer(Modifier.height(10.dp))
@@ -96,18 +101,18 @@ fun AnimeGridSection(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp),
         ) {
-            val cellW = (maxWidth - 20.dp) / 3f
+            val cellW = (maxWidth - 20.dp) / columns
             val cardH = cellW * 1.5f + 46.dp
-            val rows = ((items.size + 2) / 3).coerceAtLeast(1)
+            val rows = displayItems.size / columns
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+                columns = GridCells.Fixed(columns),
                 verticalArrangement = Arrangement.spacedBy(14.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(cardH * rows + 14.dp * (rows - 1)),
             ) {
-                items(items) { anime ->
+                items(displayItems) { anime ->
                     AnimeCard(
                         anime = anime,
                         badge = badge,

@@ -8,9 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-val Bg = Color(0xFF0A0A0A)
-val Surface = Color(0xFF141414)
-val SurfaceAlt = Color(0xFF1C1C1C)
+val Bg = Color(0xFF000000)
+val Surface = Color(0xFF0C0C0C)
+val SurfaceAlt = Color(0xFF171717)
 val TextPrimary = Color(0xFFF4F4F4)
 val TextSecondary = Color(0xFF9A9A9A)
 val AccentRed = Color(0xFFEF4444)

@@ -25,7 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -217,7 +216,7 @@ fun HomeScreen(
                         com.tsukinimev1.app.ui.home.components.AnimeGridSection(
                             title = "Sedang Tayang",
                             items = data.ongoing,
-                            badge = CardBadge("ONGOING", com.tsukinimev1.app.theme.Cyan, Color(0xFF0D0D12)),
+                            badge = CardBadge("ONGOING", com.tsukinimev1.app.theme.Cyan),
                             onSeeAll = { openList("ongoing-anime", "Sedang Tayang") },
                             onItemClick = ::openDetail,
                         )
@@ -230,7 +229,7 @@ fun HomeScreen(
                         com.tsukinimev1.app.ui.home.components.AnimeGridSection(
                             title = "Rekomendasi buat kamu",
                             items = state.recommendations,
-                            badge = CardBadge("PICKS", com.tsukinimev1.app.theme.Indigo, Color(0xFF0D0D12)),
+                            badge = CardBadge("PICKS", com.tsukinimev1.app.theme.Indigo),
                             onSeeAll = { openList("ongoing-anime", "Rekomendasi") },
                             onItemClick = ::openDetail,
                         )

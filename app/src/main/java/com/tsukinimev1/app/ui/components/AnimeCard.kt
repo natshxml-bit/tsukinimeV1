@@ -33,7 +33,6 @@ import coil.compose.AsyncImage
 import com.tsukinimev1.app.data.AnimeItem
 import com.tsukinimev1.app.data.cleanTitle
 import com.tsukinimev1.app.data.hasRating
-import com.tsukinimev1.app.theme.AccentRed
 import com.tsukinimev1.app.theme.SurfaceAlt
 import com.tsukinimev1.app.theme.TextPrimary
 import com.tsukinimev1.app.theme.TextSecondary
@@ -41,7 +40,6 @@ import com.tsukinimev1.app.theme.TextSecondary
 data class CardBadge(
     val text: String,
     val background: Color,
-    val foreground: Color = Color.White,
 )
 
 @Composable
@@ -84,19 +82,20 @@ fun AnimeCard(
                     ),
             )
             if (badge != null) {
+                // A6.1: flat solid rectangle, nempel pojok kiri-atas tanpa margin,
+                // cuma 2 sudut rounded (kiri-atas & kanan-bawah), no shadow/border.
                 Box(
                     modifier = Modifier
-                        .padding(6.dp)
-                        .clip(RoundedCornerShape(4.dp))
+                        .align(Alignment.TopStart)
+                        .clip(RoundedCornerShape(topStart = 8.dp, bottomEnd = 8.dp))
                         .background(badge.background)
-                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                        .padding(horizontal = 10.dp, vertical = 4.dp),
                 ) {
                     Text(
                         text = badge.text,
-                        color = badge.foreground,
-                        fontSize = 8.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 0.3.sp,
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
