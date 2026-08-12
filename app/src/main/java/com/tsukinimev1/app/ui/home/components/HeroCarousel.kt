@@ -263,4 +263,3 @@ fun HeroBadge(
         )
     }
 }
-}

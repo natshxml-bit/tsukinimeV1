@@ -35,7 +35,7 @@ class LocalStore(private val context: Context) {
         val rank = stringPreferencesKey("user_rank")
 
         val watchlist = stringSetPreferencesKey("watchlist")
-        val history = stringSetPreferencesKey("history")
+        val history = stringPreferencesKey("history")
         val historyProgress = stringPreferencesKey("history_progress")
 
         val lastCheckIn = stringPreferencesKey("last_checkin")
