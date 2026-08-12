@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -86,7 +85,7 @@ fun HeroCarousel(
                     modifier = Modifier
                         .fillMaxSize()
                         .scale(1.06f)
-                        .alpha(0.45f),
+                        .alpha(0.55f),
                     contentScale = ContentScale.Crop,
                 )
             }
@@ -108,13 +107,11 @@ fun HeroCarousel(
 
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 34.dp),
+            modifier = Modifier.fillMaxWidth(),
         ) { page ->
             val anime = items[page]
             val active = pagerState.currentPage == page
-            val scale by animateFloatAsState(if (active) 1f else 0.94f, label = "scale")
+            val scale by animateFloatAsState(if (active) 1f else 0.92f, label = "scale")
             val alpha by animateFloatAsState(if (active) 1f else 0.5f, label = "alpha")
             Box(
                 modifier = Modifier
@@ -159,42 +156,35 @@ fun HeroCard(
 ) {
     val statusColor = if (anime.isOngoing) Cyan else Green
     val statusText = if (anime.isOngoing) "EPISODE" else "COMPLETED"
+    val epCount = anime.episode?.takeIf { it > 0 }?.let { " $it" } ?: ""
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 10.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Surface)
+            .clickable(onClick = onClick),
     ) {
+        AsyncImage(
+            model = anime.banner ?: anime.poster,
+            contentDescription = anime.title,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+        )
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(16f / 9f)
-                .clip(RoundedCornerShape(16.dp))
-                .background(Surface)
-                .clickable(onClick = onClick),
-        ) {
-            AsyncImage(
-                model = anime.banner ?: anime.poster,
-                contentDescription = anime.title,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color.Transparent,
-                                Color.Black.copy(alpha = 0.35f),
-                                Color.Black.copy(alpha = 0.9f),
-                            ),
-                            startY = 0f,
-                            endY = 1000f,
-                        )
-                    ),
-            )
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.1f),
+                            Color.Black.copy(alpha = 0.85f),
+                        ),
+                    )
+                ),
+        )
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
@@ -258,27 +248,11 @@ fun HeroCard(
                                     .padding(horizontal = 6.dp, vertical = 2.dp),
                             ) {
                                 Text(
-                                    text = statusText,
+                                    text = statusText + epCount,
                                     color = statusColor,
                                     fontSize = 8.sp,
                                     fontWeight = FontWeight.Bold,
                                 )
-                            }
-                            // Type pill
-                            anime.type?.takeIf { it.isNotBlank() }?.let { t ->
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(4.dp))
-                                        .background(Color.White.copy(alpha = 0.2f))
-                                        .padding(horizontal = 8.dp, vertical = 2.dp),
-                                ) {
-                                    Text(
-                                        text = t,
-                                        color = Color.White,
-                                        fontSize = 8.sp,
-                                        fontWeight = FontWeight.Bold,
-                                    )
-                                }
                             }
                             // Genre pills (max 2)
                             anime.genres.take(2).forEach { g ->
@@ -365,10 +339,9 @@ fun HeroCard(
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.ExtraBold,
                             )
-                        }
-                    }
                 }
             }
         }
     }
+}
 }

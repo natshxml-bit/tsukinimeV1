@@ -99,8 +99,6 @@ fun HomeHeader(
                 }
             }
         }
-        Spacer(Modifier.height(12.dp))
-        HomeSearchBar(onSearchClick = onSearchClick)
     }
 }
 
