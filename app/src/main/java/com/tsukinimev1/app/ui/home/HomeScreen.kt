@@ -43,6 +43,7 @@ import com.tsukinimev1.app.data.Genre
 import com.tsukinimev1.app.data.HomeData
 import com.tsukinimev1.app.data.LocalStore
 import com.tsukinimev1.app.data.UserProfile
+import com.tsukinimev1.app.data.cleanTitle
 import com.tsukinimev1.app.theme.AccentRed
 import com.tsukinimev1.app.theme.TextSecondary
 import com.tsukinimev1.app.ui.components.CardBadge

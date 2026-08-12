@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.tsukinimev1.app.data.AnimeItem
 import com.tsukinimev1.app.data.cleanTitle
+import com.tsukinimev1.app.data.isOngoing
 import com.tsukinimev1.app.theme.AccentRed
 import com.tsukinimev1.app.theme.Cyan
 import com.tsukinimev1.app.theme.Green
@@ -261,4 +262,5 @@ fun HeroBadge(
             letterSpacing = 0.2.sp,
         )
     }
+}
 }

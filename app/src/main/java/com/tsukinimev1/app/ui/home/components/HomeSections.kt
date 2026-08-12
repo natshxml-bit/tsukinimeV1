@@ -44,7 +44,7 @@ fun SectionHeader(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
@@ -58,7 +58,7 @@ fun SectionHeader(
             Row(
                 modifier = Modifier
                     .clickable(onClick = onSeeAll)
-                    .padding(vertical = 4),
+                    .padding(vertical = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
@@ -92,7 +92,7 @@ fun AnimeGridSection(
         Spacer(Modifier.height(10.dp))
         LazyVerticalGrid(
             columns = GridCells.Fixed(3),
-            contentPadding = PaddingValues(horizontal = 16),
+            contentPadding = PaddingValues(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier
@@ -121,7 +121,7 @@ fun ShimmerBlock(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16),
+            .padding(horizontal = 16.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

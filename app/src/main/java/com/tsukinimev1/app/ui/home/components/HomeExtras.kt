@@ -53,7 +53,7 @@ fun CheckInCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16)
+            .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(18.dp))
             .background(
                 Brush.linearGradient(
@@ -136,11 +136,11 @@ fun GenreChipsRow(
             color = TextPrimary,
             fontSize = 17.sp,
             fontWeight = FontWeight.ExtraBold,
-            modifier = Modifier.padding(horizontal = 16),
+            modifier = Modifier.padding(horizontal = 16.dp),
         )
         Spacer(Modifier.height(10.dp))
         LazyRow(
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(9.dp),
         ) {
             items(genres) { genre ->
@@ -176,7 +176,7 @@ fun ContinueWatchingRow(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16),
+                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
@@ -191,7 +191,7 @@ fun ContinueWatchingRow(
                     modifier = Modifier
                         .clip(RoundedCornerShape(999.dp))
                         .clickable(onClick = onSeeAll)
-                        .padding(vertical = 4),
+                        .padding(vertical = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
@@ -206,7 +206,7 @@ fun ContinueWatchingRow(
         }
         Spacer(Modifier.height(10.dp))
         LazyRow(
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             items(items) { (anime, progress) ->

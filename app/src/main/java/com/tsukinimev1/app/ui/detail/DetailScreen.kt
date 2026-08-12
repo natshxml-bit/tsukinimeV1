@@ -52,6 +52,7 @@ import com.tsukinimev1.app.data.ApiClient
 import com.tsukinimev1.app.data.EpisodeInfo
 import com.tsukinimev1.app.data.LocalStore
 import com.tsukinimev1.app.data.cleanTitle
+import com.tsukinimev1.app.data.isOngoing
 import com.tsukinimev1.app.theme.AccentRed
 import com.tsukinimev1.app.theme.Cyan
 import com.tsukinimev1.app.theme.Green
@@ -309,11 +310,11 @@ fun EpisodeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16, vertical = 5)
+            .padding(horizontal = 16.dp, vertical = 5.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(SurfaceAlt)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12, vertical = 12),
+            .padding(horizontal = 12.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(

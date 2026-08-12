@@ -4,10 +4,14 @@ import android.content.Context
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import java.time.LocalDate
 
 private val Context.dataStore by preferencesDataStore(name = "tsukinime")
@@ -84,30 +88,32 @@ class LocalStore(private val context: Context) {
         runCatching { json.decodeFromString<List<AnimeItem>>(raw) }.getOrDefault(emptyList())
     }
 
-    suspend fun pushHistory(item: AnimeItem) {
-        context.dataStore.edit { p ->
+    suspend fun pushHistory(item: AnimeItem) {        context.dataStore.edit { p ->
             val raw = p[Keys.history] ?: "[]"
             val list = runCatching { json.decodeFromString<List<AnimeItem>>(raw) }
                 .getOrDefault(emptyList())
                 .filterNot { it.animeId == item.animeId }
                 .toMutableList()
             list.add(0, item)
-            p[Keys.history] = json.encodeToString(kotlinx.serialization.ListSerializer(AnimeItem.serializer()), list.take(50))
+            p[Keys.history] = json.encodeToString(ListSerializer(AnimeItem.serializer()), list.take(50))
         }
     }
 
-    suspend fun saveProgress(animeId: String, progressPercent: Int) {
+    suspend fun clearHistory() {
         context.dataStore.edit { p ->
+            p.remove(Keys.history)
+            p.remove(Keys.historyProgress)
+        }
+    }
+
+    suspend fun saveProgress(animeId: String, progressPercent: Int) {        context.dataStore.edit { p ->
             val raw = p[Keys.historyProgress] ?: "{}"
             val map = runCatching {
                 json.decodeFromString<Map<String, Int>>(raw)
             }.getOrDefault(emptyMap()).toMutableMap()
             map[animeId] = progressPercent
             p[Keys.historyProgress] = json.encodeToString(
-                kotlinx.serialization.builtins.MapSerializer(
-                    kotlinx.serialization.builtins.serializer<String>(),
-                    kotlinx.serialization.builtins.serializer<Int>()
-                ), map
+                MapSerializer(serializer<String>(), serializer<Int>()), map
             )
         }
     }

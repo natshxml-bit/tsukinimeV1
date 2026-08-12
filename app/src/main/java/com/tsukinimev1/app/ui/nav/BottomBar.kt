@@ -65,7 +65,7 @@ fun BottomBar(
         modifier = Modifier
             .fillMaxWidth()
             .background(Surface)
-            .padding(top = 6, bottom = 10),
+            .padding(top = 6.dp, bottom = 10.dp),
     ) {
         Box(
             modifier = Modifier
@@ -77,7 +77,7 @@ fun BottomBar(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6),
+                .padding(horizontal = 6.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             Tabs.forEach { tab ->
@@ -103,12 +103,12 @@ private fun TabItemView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .padding(horizontal = 4)
+            .padding(horizontal = 4.dp)
             .background(
                 color = if (selected) accent.copy(alpha = 0.16f) else Color.Transparent,
                 shape = RoundedCornerShape(12.dp),
             )
-            .padding(horizontal = 8, vertical = 4),
+            .padding(horizontal = 8.dp, vertical = 4.dp),
     ) {
         Icon(
             imageVector = if (selected) tab.selectedIcon else tab.icon,

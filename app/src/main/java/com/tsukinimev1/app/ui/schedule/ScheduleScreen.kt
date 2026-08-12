@@ -65,13 +65,13 @@ fun ScheduleScreen(navController: NavController) {
                 }
             }
             else -> items(days) { day ->
-                Column(modifier = Modifier.padding(horizontal = 16, vertical = 6)) {
+                Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(10.dp))
                             .background(SurfaceAlt)
-                            .padding(horizontal = 12, vertical = 10),
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
@@ -93,7 +93,7 @@ fun ScheduleScreen(navController: NavController) {
                             "Belum ada jadwal",
                             color = TextSecondary,
                             fontSize = 12.sp,
-                            modifier = Modifier.padding(horizontal = 12, vertical = 6),
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         )
                     } else {
                         day.animeList.forEach { anime ->

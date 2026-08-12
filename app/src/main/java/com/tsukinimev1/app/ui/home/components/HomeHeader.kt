@@ -46,7 +46,7 @@ fun HomeHeader(
     onNotificationsClick: () -> Unit,
     onSearchClick: () -> Unit,
 ) {
-    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

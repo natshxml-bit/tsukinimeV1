@@ -40,6 +40,7 @@ import com.tsukinimev1.app.theme.TextSecondary
 import com.tsukinimev1.app.ui.components.AnimeCard
 import com.tsukinimev1.app.ui.components.CardBadge
 import androidx.compose.material3.Scaffold
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,6 +54,7 @@ fun ListScreen(
     var items by remember { mutableStateOf<List<AnimeItem>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
 
     suspend fun load() {
         loading = true
@@ -110,10 +112,9 @@ fun ListScreen(
                     Text(error ?: "Error", color = TextSecondary, fontSize = 13.sp)
                     Spacer(Modifier.height(10.dp))
                     androidx.compose.material3.Button(
-                        onClick = { androidx.compose.runtime.rememberCoroutineScope().launch { load() } },
+                        onClick = { scope.launch { load() } },
                         colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = AccentRed),
-                    ) { Text("Coba lagi", fontSize = 13.sp) }
-                }
+                    ) { Text("Coba lagi", fontSize = 13.sp) }                }
             }
             items.isEmpty() -> {
                 Column(

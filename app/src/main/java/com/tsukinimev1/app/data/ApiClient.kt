@@ -1,5 +1,6 @@
 package com.tsukinimev1.app.data
 
+import com.tsukinimev1.app.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.JsonArray

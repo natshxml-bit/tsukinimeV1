@@ -85,7 +85,7 @@ fun LibraryScreen(
                 color = TextPrimary,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.padding(horizontal = 16),
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
             Spacer(Modifier.height(10.dp))
         }
@@ -95,7 +95,7 @@ fun LibraryScreen(
                     text = "Belum ada riwayat nonton",
                     color = TextSecondary,
                     fontSize = 12.sp,
-                    modifier = Modifier.padding(horizontal = 16, vertical = 12),
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 )
             } else {
                 ContinueWatchingRow(
@@ -111,7 +111,7 @@ fun LibraryScreen(
                 color = TextPrimary,
                 fontSize = 17.sp,
                 fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.padding(horizontal = 16),
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
             Spacer(Modifier.height(10.dp))
         }
@@ -133,7 +133,7 @@ fun LibraryScreen(
             } else {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(3),
-                    contentPadding = PaddingValues(horizontal = 16),
+                    contentPadding = PaddingValues(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     userScrollEnabled = false,

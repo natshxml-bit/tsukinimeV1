@@ -88,7 +88,7 @@ fun AnimeCard(
                         .padding(6.dp)
                         .clip(RoundedCornerShape(4.dp))
                         .background(badge.background)
-                        .padding(horizontal = 6, vertical = 2),
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
                 ) {
                     Text(
                         text = badge.text,
@@ -106,9 +106,9 @@ fun AnimeCard(
                         .padding(6.dp)
                         .clip(RoundedCornerShape(4.dp))
                         .background(Color.Black.copy(alpha = 0.55f))
-                        .padding(horizontal = 5, vertical = 2),
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        .padding(horizontal = 5.dp, vertical = 2.dp),
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Filled.Star,
                             contentDescription = null,
@@ -132,7 +132,7 @@ fun AnimeCard(
                         .padding(6.dp)
                         .clip(RoundedCornerShape(4.dp))
                         .background(Color.Black.copy(alpha = 0.55f))
-                        .padding(horizontal = 5, vertical = 2),
+                        .padding(horizontal = 5.dp, vertical = 2.dp),
                 ) {
                     Text(
                         text = "${anime.episode} Eps",
