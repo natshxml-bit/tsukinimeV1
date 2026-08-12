@@ -10,8 +10,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -32,12 +30,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.BookmarkBorder
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.NotificationsNone
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material.icons.filled.Sort
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -47,12 +48,13 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -69,8 +71,6 @@ import com.tsukinimev1.app.theme.AccentRed
 import com.tsukinimev1.app.theme.Amber
 import com.tsukinimev1.app.theme.Bg
 import com.tsukinimev1.app.theme.Cyan
-import com.tsukinimev1.app.theme.Green
-import com.tsukinimev1.app.theme.Surface
 import com.tsukinimev1.app.theme.SurfaceAlt
 import com.tsukinimev1.app.theme.TextPrimary
 import com.tsukinimev1.app.theme.TextSecondary
@@ -202,7 +202,7 @@ fun DetailTopBar(
                 Icon(
                     imageVector = if (saved) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder,
                     contentDescription = "Simpan",
-                    tint = if (saved) AccentRed else TextPrimary,
+                    tint = if (saved) Amber else TextPrimary,
                 )
             }
         }
@@ -244,8 +244,7 @@ fun DetailHero(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .aspectRatio(16f / 9f)
-            .background(Surface),
+            .height(330.dp),
     ) {
         AsyncImage(
             model = detail.banner ?: detail.poster,
@@ -253,63 +252,140 @@ fun DetailHero(
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
         )
+        // Gradient overlay: solid Bg di bawah, transparan di atas (gaya referensi)
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            Color.Black.copy(alpha = 0.5f),
                             Color.Transparent,
-                            Bg.copy(alpha = 0.6f),
+                            Color.Black.copy(alpha = 0.35f),
+                            Bg.copy(alpha = 0.92f),
                             Bg,
                         ),
-                        startY = 0f,
-                        endY = 1200f,
                     )
                 ),
         )
-        IconButton(
-            onClick = onBack,
+        // Back — lingkaran 45dp blur semi-transparan
+        Box(
             modifier = Modifier
-                .padding(8.dp)
-                .size(40.dp)
-                .background(Color.Black.copy(alpha = 0.4f), CircleShape),
+                .padding(top = 20.dp, start = 15.dp)
+                .size(45.dp)
+                .clip(CircleShape)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .border(1.dp, Color.White.copy(alpha = 0.1f), CircleShape)
+                .clickable(onClick = onBack),
+            contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White,
+                modifier = Modifier.size(20.dp),
+            )
         }
+        // Poster + title — menjorok keluar dari bottom banner (overlap)
         Row(
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp)
+                .offset(y = 105.dp),
+            verticalAlignment = Alignment.Bottom,
         ) {
             AsyncImage(
                 model = detail.poster,
                 contentDescription = detail.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .width(100.dp)
+                    .width(110.dp)
                     .aspectRatio(2f / 3f)
-                    .clip(RoundedCornerShape(8.dp))
-                    .offset(y = 60.dp),
+                    .clip(RoundedCornerShape(16.dp))
+                    .border(2.dp, AccentRed.copy(alpha = 0.35f), RoundedCornerShape(16.dp))
+                    .shadow(10.dp, RoundedCornerShape(16.dp), spotColor = Color.Black),
             )
-            Spacer(Modifier.width(14.dp))
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .offset(y = 20.dp),
-            ) {
+            Spacer(Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f).padding(bottom = 6.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    // Status badge — cyan (ongoing) / gold (completed)
+                    val ongoing = detail.isOngoing
+                    val statusBg = if (ongoing) Cyan.copy(alpha = 0.12f) else Color(0xFFF5B301).copy(alpha = 0.12f)
+                    val statusFg = if (ongoing) Cyan else Color(0xFFF5B301)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(statusBg)
+                            .border(1.dp, statusFg.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                    ) {
+                        Text(
+                            text = (detail.status ?: "Ongoing").uppercase(),
+                            color = statusFg,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 0.5.sp,
+                        )
+                    }
+                    // Type badge
+                    detail.type?.takeIf { it.isNotBlank() }?.let { t ->
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(AccentRed.copy(alpha = 0.15f))
+                                .border(1.dp, AccentRed.copy(alpha = 0.3f), RoundedCornerShape(6.dp))
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                        ) {
+                            Text(
+                                text = t,
+                                color = AccentRed,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Black,
+                                letterSpacing = 0.5.sp,
+                            )
+                        }
+                    }
+                    // Rating — amber star (skip kalau null/0)
+                    if (detail.hasRating) {
+                        Row(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color(0xFFFFC107).copy(alpha = 0.15f))
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = null,
+                                tint = Color(0xFFFFC107),
+                                modifier = Modifier.size(11.dp),
+                            )
+                            Spacer(Modifier.width(3.dp))
+                            Text(
+                                text = detail.score?.trim().orEmpty(),
+                                color = Color(0xFFFFC107),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Black,
+                            )
+                        }
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
                 Text(
                     text = detail.cleanTitle,
                     color = Color.White,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 2,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Black,
+                    lineHeight = 26.sp,
+                    maxLines = 3,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.shadow(8.dp, RoundedCornerShape(4.dp), spotColor = Color.Black),
                 )
                 if (!detail.altTitle.isNullOrBlank()) {
-                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.height(3.dp))
                     Text(
                         text = detail.altTitle,
                         color = TextSecondary,
@@ -318,39 +394,7 @@ fun DetailHero(
                         overflow = TextOverflow.Ellipsis,
                     )
                 }
-                Spacer(Modifier.height(8.dp))
-                DetailInfoPills(detail)
-                if (detail.isOngoing && !detail.scheduleDay.isNullOrBlank()) {
-                    Spacer(Modifier.height(6.dp))
-                    Text(
-                        text = "📅 Setiap ${detail.scheduleDay}",
-                        color = Color.White,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Amber)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                    )
-                }
             }
-        }
-    }
-}
-
-@Composable
-fun DetailInfoPills(detail: AnimeDetail) {
-    val pills = mutableListOf<Pair<String, Color>>()
-    if (detail.hasRating) pills.add("★ ${detail.score?.trim()}" to AccentRed)
-    pills.add(
-        (if (detail.isOngoing) "ONGOING" else "COMPLETED") to (if (detail.isOngoing) Cyan else Green)
-    )
-    detail.type?.takeIf { it.isNotBlank() }?.let { pills.add(it to Color.White) }
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(6.dp),
-    ) {
-        pills.forEach { (text, color) ->
-            InfoChip(text, color, solid = color == AccentRed)
         }
     }
 }
@@ -363,41 +407,114 @@ fun DetailBody(
     onPlay: () -> Unit,
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Spacer(Modifier.height(40.dp))
+        Spacer(Modifier.height(140.dp))
 
-        // B3: Metadata chips dengan icon (📅🎬🏢📀), FlowRow wrap, skip null.
-        val meta = buildList {
-            detail.released?.takeIf { it.isNotBlank() }?.let { add("📅" to "Rilis: $it") }
-            detail.type?.takeIf { it.isNotBlank() }?.let { add("🎬" to it) }
-            detail.author?.takeIf { it.isNotBlank() }?.let { add("🏢" to "Studio: $it") }
-            detail.totalEpisodes?.takeIf { it > 0 }?.let { add("📀" to "Total: $it Eps") }
-        }
-        if (meta.isNotEmpty()) {
-            MetaChipsRow(meta)
-            Spacer(Modifier.height(12.dp))
+        // META ROW — kartu 3 kolom (Rilis / Author / Total)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color.White.copy(alpha = 0.03f))
+                .border(1.dp, Color.White.copy(alpha = 0.06f), RoundedCornerShape(16.dp))
+                .padding(vertical = 14.dp),
+        ) {
+            listOf(
+                Triple(Icons.Filled.CalendarMonth, "Rilis", detail.released ?: "—"),
+                Triple(Icons.Filled.Sell, "Author", detail.author ?: "—"),
+                Triple(Icons.Filled.Bookmark, "Total", "${detail.totalEpisodes ?: detail.episodes.size} Eps"),
+            ).forEachIndexed { i, (icon, label, value) ->
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .border(
+                            width = if (i > 0) 1.dp else 0.dp,
+                            color = Color.White.copy(alpha = 0.06f),
+                            shape = androidx.compose.foundation.shape.RectangleShape,
+                        ),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(imageVector = icon, contentDescription = null, tint = AccentRed, modifier = Modifier.size(11.dp))
+                        Spacer(Modifier.width(4.dp))
+                        Text(label, color = TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+                    }
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = value,
+                        color = Color(0xFFE4E4E7),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+            }
         }
 
-        // Genre tags (accent)
+        Spacer(Modifier.height(14.dp))
+
+        // Genre tags — chip style (outline accent, tanpa icon)
         if (detail.genres.isNotEmpty()) {
-            GenreTags(detail.genres)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                detail.genres.take(6).forEach { g ->
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(AccentRed.copy(alpha = 0.1f))
+                            .border(1.dp, AccentRed.copy(alpha = 0.3f), RoundedCornerShape(50))
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                    ) {
+                        Text(
+                            text = g,
+                            color = AccentRed,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+            }
             Spacer(Modifier.height(16.dp))
         }
 
-        // CTA
-        Row {
+        // Badge jadwal (hanya ongoing)
+        if (detail.isOngoing && !detail.scheduleDay.isNullOrBlank()) {
             Box(
                 modifier = Modifier
-                    .weight(1.6f)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color(0xFFF59E0B).copy(alpha = 0.15f))
+                    .border(1.dp, Color(0xFFF59E0B).copy(alpha = 0.4f), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+            ) {
+                Text(
+                    text = "📅 Setiap ${detail.scheduleDay}",
+                    color = Color(0xFFFBBF24),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+            Spacer(Modifier.height(16.dp))
+        }
+
+        // CTA — Tonton (flex 1.8) + Subscribe (flex 1)
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .weight(1.8f)
                     .height(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(14.dp))
                     .background(AccentRed)
                     .clickable(onClick = onPlay),
                 contentAlignment = Alignment.Center,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                    Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(6.dp))
-                    Text("Tonton Sekarang", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold)
+                    Text("TONTON SEKARANG", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Black, letterSpacing = 0.3.sp)
                 }
             }
             Spacer(Modifier.width(10.dp))
@@ -405,9 +522,9 @@ fun DetailBody(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp)
-                    .clip(RoundedCornerShape(12.dp))
+                    .clip(RoundedCornerShape(14.dp))
                     .background(AccentRed.copy(alpha = 0.12f))
-                    .border(1.dp, AccentRed.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+                    .border(1.dp, AccentRed.copy(alpha = 0.4f), RoundedCornerShape(14.dp))
                     .clickable(onClick = onToggleSubscribe),
                 contentAlignment = Alignment.Center,
             ) {
@@ -416,10 +533,15 @@ fun DetailBody(
                         imageVector = if (subscribed) Icons.Filled.NotificationsActive else Icons.Filled.NotificationsNone,
                         contentDescription = null,
                         tint = AccentRed,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(15.dp),
                     )
-                    Spacer(Modifier.width(6.dp))
-                    Text("Subscribe", color = if (subscribed) AccentRed else TextPrimary, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.width(5.dp))
+                    Text(
+                        text = if (subscribed) "Terlanggan" else "Subscribe",
+                        color = if (subscribed) AccentRed else TextPrimary,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
         }
@@ -443,61 +565,6 @@ fun formatCount(v: Long): String {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
-@Composable
-fun MetaChipsRow(chips: List<Pair<String, String>>) {
-    val visible = chips.take(8)
-    val hidden = chips.size - visible.size
-    FlowRow(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        visible.forEach { (icon, text) ->
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(999.dp))
-                    .background(Color(0xFF1A1A1A))
-                    .padding(horizontal = 10.dp, vertical = 5.dp),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(icon, fontSize = 11.sp)
-                    Spacer(Modifier.width(5.dp))
-                    Text(text, color = TextPrimary, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
-                }
-            }
-        }
-        if (hidden > 0) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(999.dp))
-                    .background(Color(0xFF1A1A1A))
-                    .padding(horizontal = 10.dp, vertical = 5.dp),
-            ) {
-                Text("+$hidden lainnya", color = TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-            }
-        }
-    }
-}
-
-@Composable
-fun GenreTags(genres: List<String>) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        genres.take(8).forEach { g ->
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(999.dp))
-                    .background(AccentRed.copy(alpha = 0.12f))
-                    .border(1.dp, AccentRed.copy(alpha = 0.5f), RoundedCornerShape(999.dp))
-                    .padding(horizontal = 10.dp, vertical = 5.dp),
-            ) {
-                Text(g, color = AccentRed, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
-            }
-        }
-    }
-}
-
 @Composable
 fun DetailSynopsis(synopsis: String?) {
     if (synopsis.isNullOrBlank()) return
@@ -506,16 +573,16 @@ fun DetailSynopsis(synopsis: String?) {
     val arrowRotation by animateFloatAsState(if (expanded) 180f else 0f, label = "chevron")
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.width(3.dp).height(16.dp).background(AccentRed, RoundedCornerShape(2.dp)))
+            Box(modifier = Modifier.width(3.dp).height(16.dp).background(AccentRed, RoundedCornerShape(4.dp)))
             Spacer(Modifier.width(8.dp))
-            Text("Sinopsis", color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            Text("Sinopsis", color = TextPrimary, fontSize = 16.sp, fontWeight = FontWeight.ExtraBold)
         }
         Spacer(Modifier.height(8.dp))
         Text(
             text = synopsis,
             color = TextSecondary,
-            fontSize = 13.sp,
-            lineHeight = 20.sp,
+            fontSize = 14.sp,
+            lineHeight = 21.sp,
             maxLines = if (expanded) Int.MAX_VALUE else 3,
             overflow = TextOverflow.Ellipsis,
             onTextLayout = { lineCount = it.lineCount },
@@ -523,20 +590,23 @@ fun DetailSynopsis(synopsis: String?) {
         if (lineCount >= 4) {
             Row(
                 modifier = Modifier
+                    .fillMaxWidth()
                     .padding(top = 4.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .clickable { expanded = !expanded }
-                    .padding(4.dp),
+                    .padding(vertical = 6.dp),
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = if (expanded) "Ciutkan" else "Selengkapnya",
+                    text = if (expanded) "Sembunyikan" else "Selengkapnya",
                     color = AccentRed,
-                    fontSize = 12.sp,
+                    fontSize = 13.sp,
                     fontWeight = FontWeight.Bold,
                 )
+                Spacer(Modifier.width(5.dp))
                 Icon(
-                    imageVector = Icons.Filled.KeyboardArrowDown,
+                    imageVector = if (expanded) Icons.Filled.KeyboardArrowDown else Icons.Filled.KeyboardArrowDown,
                     contentDescription = null,
                     tint = AccentRed,
                     modifier = Modifier.size(16.dp).rotate(arrowRotation),
@@ -551,6 +621,7 @@ fun RelatedSection(
     items: List<AnimeItem>,
     onItemClick: (AnimeItem) -> Unit,
 ) {
+    if (items.isEmpty()) return
     Column {
         Text(
             text = "Rekomendasi",
@@ -602,12 +673,16 @@ fun EpisodeSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
-            Text(
-                text = "${detail.episodes.size} Episode",
-                color = TextPrimary,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.ExtraBold,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.width(4.dp).height(18.dp).background(AccentRed, RoundedCornerShape(4.dp)))
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    text = "${detail.episodes.size} Episode",
+                    color = TextPrimary,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Black,
+                )
+            }
             Row {
                 IconButton(onClick = { showSearch = !showSearch }, modifier = Modifier.size(40.dp)) {
                     Icon(Icons.Filled.Search, contentDescription = "Cari", tint = TextPrimary, modifier = Modifier.size(20.dp))
@@ -646,15 +721,16 @@ fun EpisodeSection(
                 }
             }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(12.dp))
         visible.forEach { ep ->
             EpisodeRow(ep = ep, onPlay = { onPlay(ep) })
+            Spacer(Modifier.height(12.dp))
         }
         if (visible.size < filtered.size) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(horizontal = 16.dp)
                     .clip(RoundedCornerShape(12.dp))
                     .background(AccentRed)
                     .clickable { page += 1 }
@@ -675,55 +751,66 @@ fun EpisodeRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 5.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(SurfaceAlt)
+            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(if (ep.watched) AccentRed.copy(alpha = 0.08f) else Color.White.copy(alpha = 0.03f))
+            .border(if (ep.watched) 1.dp else 1.dp, if (ep.watched) AccentRed.copy(alpha = 0.4f) else Color.White.copy(alpha = 0.05f), RoundedCornerShape(16.dp))
             .clickable(onClick = onPlay)
-            .padding(horizontal = 12.dp, vertical = 12.dp),
+            .padding(horizontal = 14.dp, vertical = 14.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // EP numeral badge — border accent / solid accent kalau ditonton
         Box(
             modifier = Modifier
-                .size(36.dp)
+                .size(40.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(if (ep.watched) AccentRed else Color.Transparent)
-                .border(if (ep.watched) 0.dp else 1.5.dp, AccentRed, RoundedCornerShape(10.dp)),
+                .background(if (ep.watched) AccentRed.copy(alpha = 0.15f) else AccentRed.copy(alpha = 0.12f))
+                .border(
+                    if (ep.watched) 1.5.dp else 1.dp,
+                    if (ep.watched) AccentRed.copy(alpha = 0.6f) else AccentRed.copy(alpha = 0.3f),
+                    RoundedCornerShape(10.dp),
+                ),
             contentAlignment = Alignment.Center,
         ) {
             Text(
                 text = episodeNumber(ep),
-                color = if (ep.watched) Color.White else AccentRed,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
+                color = AccentRed,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Black,
             )
         }
-        Spacer(Modifier.width(12.dp))
+        Spacer(Modifier.width(14.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = ep.title.ifBlank { "Episode" },
-                color = TextPrimary,
+                color = Color(0xFFE4E4E7),
                 fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            val rel = ep.date?.let { relativeTime(it) }
             val viewsText = ep.views?.let { "👁 ${formatCount(it.toLong())}" }
-            val info = listOfNotNull(viewsText, rel).joinToString(" · ")
+            val rel = ep.date?.let { relativeTime(it) }
+            val info = listOfNotNull(viewsText, rel).joinToString("  ·  ")
             if (info.isNotEmpty()) {
                 Spacer(Modifier.height(3.dp))
-                Text(info, color = TextSecondary, fontSize = 11.sp)
+                Text(info, color = TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Medium)
             }
         }
         Spacer(Modifier.width(8.dp))
         Box(
             modifier = Modifier
-                .size(36.dp)
-                .clip(CircleShape)
-                .background(AccentRed.copy(alpha = 0.15f)),
+                .clip(RoundedCornerShape(10.dp))
+                .background(AccentRed.copy(alpha = 0.15f))
+                .border(1.dp, AccentRed.copy(alpha = 0.3f), RoundedCornerShape(10.dp))
+                .padding(horizontal = 12.dp, vertical = 8.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = AccentRed, modifier = Modifier.size(18.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Filled.PlayArrow, contentDescription = null, tint = AccentRed, modifier = Modifier.size(11.dp))
+                Spacer(Modifier.width(4.dp))
+                Text("Play", color = AccentRed, fontSize = 11.sp, fontWeight = FontWeight.Black)
+            }
         }
     }
 }
@@ -752,30 +839,4 @@ fun relativeTime(dateStr: String): String {
 fun episodeNumber(ep: Episode): String {
     val m = Regex("\\d+").find(ep.title) ?: Regex("\\d+").find(ep.episodeId)
     return m?.value ?: "?"
-}
-
-@Composable
-fun InfoChip(
-    text: String,
-    color: Color,
-    solid: Boolean,
-) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(if (solid) color else color.copy(alpha = 0.14f))
-            .border(
-                width = if (solid) 0.dp else 1.dp,
-                color = if (solid) Color.Transparent else color.copy(alpha = 0.4f),
-                shape = RoundedCornerShape(999.dp),
-            )
-            .padding(horizontal = 8.dp, vertical = 3.dp),
-    ) {
-        Text(
-            text = text,
-            color = if (solid) Color.White else color,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.ExtraBold,
-        )
-    }
 }

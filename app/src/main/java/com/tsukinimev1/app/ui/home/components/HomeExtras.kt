@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Sell
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -138,17 +139,27 @@ fun GenreChipsRow(
             horizontalArrangement = Arrangement.spacedBy(9.dp),
         ) {
             items(genres) { genre ->
+                // Style chip ala referensi: rounded pill, border halus, bg gelap,
+                // icon tag kecil + teks abu terang.
                 Row(
                     modifier = Modifier
                         .clip(RoundedCornerShape(50))
-                        .border(1.dp, AccentRed, RoundedCornerShape(50))
+                        .background(Color(0xFF17171A))
+                        .border(1.dp, Color.White.copy(alpha = 0.12f), RoundedCornerShape(50))
                         .clickable { onGenreClick(genre) }
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = 15.dp, vertical = 8.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    Icon(
+                        imageVector = Icons.Filled.Sell,
+                        contentDescription = null,
+                        tint = AccentRed.copy(alpha = 0.7f),
+                        modifier = Modifier.size(11.dp),
+                    )
+                    Spacer(Modifier.width(6.dp))
                     Text(
                         text = genre.title,
-                        color = AccentRed,
+                        color = TextSecondary,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                     )

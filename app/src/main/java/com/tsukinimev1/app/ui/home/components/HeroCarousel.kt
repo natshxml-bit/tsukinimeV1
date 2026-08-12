@@ -1,6 +1,7 @@
 package com.tsukinimev1.app.ui.home.components
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -22,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,7 +31,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -66,35 +71,82 @@ fun HeroCarousel(
         }
     }
 
-    Column {
-        HorizontalPager(
-            state = pagerState,
-            modifier = Modifier.fillMaxWidth(),
-        ) { page ->
-            val anime = items[page]
-            HeroCard(
-                anime = anime,
-                onPlayClick = { onPlayClick(anime) },
-                onClick = { onCardClick(anime) },
-            )
-        }
-        Spacer(Modifier.height(10.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-        ) {
-            repeat(items.size) { i ->
-                val active = pagerState.currentPage == i
-                val width by animateDpAsState(if (active) 20.dp else 6.dp, label = "dot")
-                Box(
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(250.dp),
+    ) {
+        // Backdrop blur — banner aktif sebagai bg samar di belakang slide
+        items.forEachIndexed { i, anime ->
+            val active = pagerState.currentPage == i
+            if (active) {
+                AsyncImage(
+                    model = anime.banner ?: anime.poster,
+                    contentDescription = null,
                     modifier = Modifier
-                        .padding(horizontal = 3.dp)
-                        .clip(RoundedCornerShape(999.dp))
-                        .background(if (active) AccentRed else Color.White.copy(alpha = 0.3f))
-                        .width(width)
-                        .height(6.dp),
+                        .fillMaxSize()
+                        .scale(1.06f)
+                        .alpha(0.45f),
+                    contentScale = ContentScale.Crop,
                 )
             }
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.5f),
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.75f),
+                            Bg,
+                        ),
+                    )
+                ),
+        )
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 34.dp),
+        ) { page ->
+            val anime = items[page]
+            val active = pagerState.currentPage == page
+            val scale by animateFloatAsState(if (active) 1f else 0.94f, label = "scale")
+            val alpha by animateFloatAsState(if (active) 1f else 0.5f, label = "alpha")
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .scale(scale)
+                    .alpha(alpha),
+                contentAlignment = Alignment.Center,
+            ) {
+                HeroCard(
+                    anime = anime,
+                    onPlayClick = { onPlayClick(anime) },
+                    onClick = { onCardClick(anime) },
+                )
+            }
+        }
+    }
+    Spacer(Modifier.height(8.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        repeat(items.size) { i ->
+            val active = pagerState.currentPage == i
+            val width by animateDpAsState(if (active) 14.dp else 6.dp, label = "dot")
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 3.dp)
+                    .clip(RoundedCornerShape(999.dp))
+                    .background(if (active) AccentRed else Color.White.copy(alpha = 0.3f))
+                    .width(width)
+                    .height(6.dp),
+            )
         }
     }
 }
@@ -106,168 +158,217 @@ fun HeroCard(
     onClick: () -> Unit,
 ) {
     val statusColor = if (anime.isOngoing) Cyan else Green
-    val statusText = if (anime.isOngoing) "ONGOING" else "COMPLETED"
+    val statusText = if (anime.isOngoing) "EPISODE" else "COMPLETED"
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 6.dp)
-            .aspectRatio(16f / 9f)
-            .clip(RoundedCornerShape(16.dp))
-            .background(Surface)
-            .clickable(onClick = onClick),
+            .padding(horizontal = 12.dp),
     ) {
-        AsyncImage(
-            model = anime.poster ?: anime.banner,
-            contentDescription = anime.title,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop,
-        )
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.Transparent,
-                            Bg.copy(alpha = 0.55f),
-                            Bg,
-                        ),
-                        startY = 0f,
-                        endY = 1200f,
-                    )
-                ),
-        )
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
                 .fillMaxWidth()
-                .padding(14.dp),
+                .aspectRatio(16f / 9f)
+                .clip(RoundedCornerShape(16.dp))
+                .background(Surface)
+                .clickable(onClick = onClick),
         ) {
-            Text(
-                text = anime.cleanTitle,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                color = Color.White,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.ExtraBold,
-                lineHeight = 20.sp,
+            AsyncImage(
+                model = anime.banner ?: anime.poster,
+                contentDescription = anime.title,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop,
             )
-            Spacer(Modifier.height(8.dp))
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color.Black.copy(alpha = 0.35f))
-                    .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
-                    .padding(10.dp),
+                    .fillMaxSize()
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.Transparent,
+                                Color.Black.copy(alpha = 0.35f),
+                                Color.Black.copy(alpha = 0.9f),
+                            ),
+                            startY = 0f,
+                            endY = 1000f,
+                        )
+                    ),
+            )
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .fillMaxWidth()
+                    .padding(12.dp),
             ) {
-                Column {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        if (anime.hasRating) {
-                            HeroBadge("★ ${anime.score?.trim()}", AccentRed, true)
+                Text(
+                    text = anime.cleanTitle,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    lineHeight = 20.sp,
+                    modifier = Modifier.shadow(8.dp, RoundedCornerShape(4.dp), spotColor = Color.Black),
+                )
+                Spacer(Modifier.height(8.dp))
+                // Glass box — satu container translucent berisi tags + sinopsis
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFF141414).copy(alpha = 0.85f))
+                        .border(1.dp, Color.White.copy(alpha = 0.1f), RoundedCornerShape(12.dp))
+                        .padding(10.dp),
+                ) {
+                    Column {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            if (anime.hasRating) {
+                                // Rating — amber box solid ala UTM
+                                Row(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(Color(0xFFFFC107))
+                                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Star,
+                                        contentDescription = null,
+                                        tint = Color(0xFF121212),
+                                        modifier = Modifier.size(8.dp),
+                                    )
+                                    Spacer(Modifier.width(3.dp))
+                                    Text(
+                                        text = anime.score?.trim().orEmpty(),
+                                        color = Color(0xFF121212),
+                                        fontSize = 9.sp,
+                                        fontWeight = FontWeight.Black,
+                                    )
+                                }
+                            }
+                            // Status pill
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(statusColor.copy(alpha = 0.12f))
+                                    .border(1.dp, statusColor, RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp),
+                            ) {
+                                Text(
+                                    text = statusText,
+                                    color = statusColor,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            }
+                            // Type pill
+                            anime.type?.takeIf { it.isNotBlank() }?.let { t ->
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(Color.White.copy(alpha = 0.2f))
+                                        .padding(horizontal = 8.dp, vertical = 2.dp),
+                                ) {
+                                    Text(
+                                        text = t,
+                                        color = Color.White,
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                }
+                            }
+                            // Genre pills (max 2)
+                            anime.genres.take(2).forEach { g ->
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(Color.White.copy(alpha = 0.2f))
+                                        .padding(horizontal = 8.dp, vertical = 2.dp),
+                                ) {
+                                    Text(
+                                        text = g,
+                                        color = Color.White,
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Bold,
+                                    )
+                                }
+                            }
                         }
-                        HeroBadge(statusText, statusColor, false)
-                        anime.type?.takeIf { it.isNotBlank() }?.let { HeroBadge(it, Color.White, false) }
-                    }
-                    if (!anime.synopsis.isNullOrBlank()) {
-                        Spacer(Modifier.height(6.dp))
-                        Text(
-                            text = anime.synopsis,
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis,
-                            color = Color.White.copy(alpha = 0.75f),
-                            fontSize = 10.5.sp,
-                            fontWeight = FontWeight.Medium,
-                        )
-                    }
-                }
-            }
-            Spacer(Modifier.height(10.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Box(
-                    modifier = Modifier
-                        .weight(1.6f)
-                        .height(48.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(AccentRed)
-                        .clickable(onClick = onPlayClick),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Filled.PlayArrow,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp),
-                        )
-                        Spacer(Modifier.width(6.dp))
-                        Text(
-                            text = "Tonton",
-                            color = Color.White,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                        )
+                        if (!anime.synopsis.isNullOrBlank()) {
+                            Spacer(Modifier.height(6.dp))
+                            Text(
+                                text = anime.synopsis,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                                color = Color.White.copy(alpha = 0.8f),
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Medium,
+                                lineHeight = 13.sp,
+                            )
+                        }
                     }
                 }
-                Spacer(Modifier.width(8.dp))
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(48.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.Black.copy(alpha = 0.5f))
-                        .border(1.dp, Color.White.copy(alpha = 0.22f), RoundedCornerShape(12.dp))
-                        .clickable(onClick = onClick),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Filled.Groups,
-                            contentDescription = null,
-                            tint = AccentRed,
-                            modifier = Modifier.size(14.dp),
-                        )
-                        Spacer(Modifier.width(6.dp))
-                        Text(
-                            text = "Nobar",
-                            color = Color.White,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.ExtraBold,
-                        )
+                Spacer(Modifier.height(10.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Tonton — filled accent, flex besar
+                    Box(
+                        modifier = Modifier
+                            .weight(1.6f)
+                            .height(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(AccentRed)
+                            .clickable(onClick = onPlayClick),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Filled.PlayArrow,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp),
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                text = "Tonton",
+                                color = Color.White,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                            )
+                        }
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    // Nobar — dark translucent outline
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(44.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF08080B).copy(alpha = 0.72f))
+                            .border(1.dp, Color.White.copy(alpha = 0.22f), RoundedCornerShape(12.dp))
+                            .clickable(onClick = onClick),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Filled.Groups,
+                                contentDescription = null,
+                                tint = AccentRed,
+                                modifier = Modifier.size(13.dp),
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text(
+                                text = "Nobar",
+                                color = Color.White,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                            )
+                        }
                     }
                 }
             }
         }
-    }
-}
-
-@Composable
-fun HeroBadge(
-    text: String,
-    color: Color,
-    solid: Boolean,
-) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .background(if (solid) color else color.copy(alpha = 0.14f))
-            .border(
-                if (solid) androidx.compose.foundation.BorderStroke(0.dp, Color.Transparent)
-                else androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.4f)),
-                RoundedCornerShape(999.dp),
-            )
-            .padding(horizontal = 8.dp, vertical = 3.dp),
-    ) {
-        Text(
-            text = text,
-            color = if (solid) Color.White else color,
-            fontSize = 9.sp,
-            fontWeight = FontWeight.ExtraBold,
-            letterSpacing = 0.2.sp,
-        )
     }
 }
