@@ -89,39 +89,38 @@ fun AnimeCard(
                         .align(Alignment.TopStart)
                         .clip(RoundedCornerShape(topStart = 8.dp, bottomEnd = 8.dp))
                         .background(badge.background)
-                        .padding(horizontal = 10.dp, vertical = 4.dp),
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
                 ) {
                     Text(
                         text = badge.text,
                         color = Color.White,
-                        fontSize = 10.sp,
+                        fontSize = 8.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 }
             }
             if (showScore && anime.hasRating) {
-                // A6.2: rating badge di pojok KANAN atas (lawan dari status badge),
-                // bentuk beda — full rounded 8dp semua sudut, translucent hitam.
+                // Style sama dengan status badge (flat solid, 2 sudut rounded),
+                // dimirror untuk pojok kanan-atas.
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(6.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(Color.Black.copy(alpha = 0.5f))
-                        .padding(horizontal = 6.dp, vertical = 4.dp),
+                        .clip(RoundedCornerShape(topEnd = 8.dp, bottomStart = 8.dp))
+                        .background(Color.Black.copy(alpha = 0.75f))
+                        .padding(horizontal = 6.dp, vertical = 2.dp),
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Filled.Star,
                             contentDescription = null,
                             tint = Color(0xFFFBBF24),
-                            modifier = Modifier.size(10.dp),
+                            modifier = Modifier.size(8.dp),
                         )
-                        Spacer(Modifier.width(3.dp))
+                        Spacer(Modifier.width(2.dp))
                         Text(
                             text = anime.score.orEmpty(),
                             color = Color.White,
-                            fontSize = 10.sp,
+                            fontSize = 8.sp,
                             fontWeight = FontWeight.Bold,
                         )
                     }
