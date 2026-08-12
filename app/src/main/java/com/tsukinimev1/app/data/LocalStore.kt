@@ -44,6 +44,8 @@ class LocalStore(private val context: Context) {
         val checkInStreak = intPreferencesKey("checkin_streak")
 
         val watchedEpisodes = stringSetPreferencesKey("watched_episodes")
+
+        val heroBanners = stringPreferencesKey("hero_banners")
     }
 
     // ---------- Profile ----------
@@ -139,6 +141,21 @@ class LocalStore(private val context: Context) {
             p[Keys.historyProgress] = json.encodeToString(
                 MapSerializer(String.serializer(), Int.serializer()), map
             )
+        }
+    }
+
+    // ---------- Hero banner cache ----------
+    suspend fun heroBanners(): Map<String, String> = context.dataStore.data.map { p ->
+        val raw = p[Keys.heroBanners] ?: "{}"
+        runCatching { json.decodeFromString<Map<String, String>>(raw) }.getOrDefault(emptyMap())
+    }.first()
+
+    suspend fun saveHeroBanners(map: Map<String, String>) {
+        if (map.isEmpty()) return
+        context.dataStore.edit { p ->
+            val prev = runCatching { json.decodeFromString<Map<String, String>>(p[Keys.heroBanners] ?: "{}") }
+                .getOrDefault(emptyMap())
+            p[Keys.heroBanners] = json.encodeToString(MapSerializer(String.serializer(), String.serializer()), prev + map)
         }
     }
 
