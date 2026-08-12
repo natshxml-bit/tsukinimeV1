@@ -17,13 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -38,10 +35,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import com.tsukinimev1.app.data.AnimeItem
-import com.tsukinimev1.app.data.ApiClient
 import com.tsukinimev1.app.data.CheckInStatus
 import com.tsukinimev1.app.data.Genre
-import com.tsukinimev1.app.data.HomeData
 import com.tsukinimev1.app.data.LocalStore
 import com.tsukinimev1.app.data.UserProfile
 import com.tsukinimev1.app.data.cleanTitle
@@ -66,32 +61,6 @@ fun HomeScreen(
     val checkIn by store.checkIn.collectAsStateWithLifecycle(initialValue = CheckInStatus())
     val profile by store.profile.collectAsStateWithLifecycle(initialValue = UserProfile())
     val history by store.history.collectAsStateWithLifecycle(initialValue = emptyList())
-
-    val heroBanners = remember { mutableStateOf<Map<String, String>>(emptyMap()) }
-
-    val heroCandidates = remember(uiState) {
-        val d = (uiState as? HomeUiState.Success)?.data ?: HomeData()
-        val list = if (d.recent.isNotEmpty()) d.recent else d.ongoing
-        list.take(8).map { it.animeId to it }.toMap()
-    }
-
-    LaunchedEffect(heroCandidates.keys) {
-        if (heroCandidates.isEmpty()) return@LaunchedEffect
-        val cached = store.heroBanners()
-        val fresh = heroCandidates.filterValues { it.banner.isNullOrBlank() }
-            .keys
-            .filterNot { cached.containsKey(it) }
-        var map = cached
-        for (id in fresh) {
-            val anime = heroCandidates[id] ?: continue
-            val banner = ApiClient.fetchAniListBanner(anime.title) ?: continue
-            if (banner.isNotBlank()) map = map + (id to banner)
-        }
-        if (fresh.isNotEmpty() && map != cached) {
-            store.saveHeroBanners(map)
-        }
-        heroBanners.value = map
-    }
 
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -177,14 +146,7 @@ fun HomeScreen(
             }
             is HomeUiState.Success -> {
                 val data = state.data
-                val heroItems = (if (data.recent.isNotEmpty()) data.recent else data.ongoing)
-                    .take(8)
-                    .map { a ->
-                        heroBanners.value[a.animeId]
-                            ?.takeIf { it.isNotBlank() }
-                            ?.let { a.copy(banner = it) }
-                            ?: a
-                    }
+                val heroItems = (if (data.recent.isNotEmpty()) data.recent else data.ongoing).take(8)
 
                 if (heroItems.isNotEmpty()) {
                     item {
